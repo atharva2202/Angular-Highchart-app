@@ -1,0 +1,16 @@
+<ul class="menu">
+  <li (click)="toggleCharts()" class="menu-header">
+    Charts
+    <span class="arrow">{{ showCharts ? '▲' : '▼' }}</span>
+  </li>
+  @if (showCharts){
+  <ul class="submenu">
+    <li (click)="selectChart('pie')">Pie Chart</li>
+    <li (click)="selectChart('column')">Column Chart</li>
+    <li (click)="selectChart('line')">Line Chart</li>
+    <li (click)="selectChart('treemap')">Treemap Chart</li>
+    <li (click)="selectChart('area')">Area Chart</li>
+    <li (click)="selectChart('stacked')">Stacked Bar Chart</li>
+  </ul>
+  }
+</ul>

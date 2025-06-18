@@ -1,0 +1,31 @@
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  .menu-header {
+    padding: 12px 20px;
+    font-weight: bold;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .submenu {
+    list-style: none;
+    padding: 0;
+
+    li {
+      padding: 10px 30px;
+      cursor: pointer;
+      &:hover {
+        background-color: #dcdcdc;
+      }
+    }
+  }
+
+  .arrow {
+    font-size: 12px;
+  }
+}

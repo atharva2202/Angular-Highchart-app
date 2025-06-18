@@ -1,0 +1,35 @@
+.navbar {
+  height: 60px;
+  background-color: #1976d2;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 18px;
+  gap: 20px;
+
+  .logo-img {
+    height: 32px;
+    margin-right: 10px;
+  }
+
+  .logo {
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .nav-item {
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .highcharts-link {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+  }
+}
