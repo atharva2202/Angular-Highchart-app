@@ -1,5 +1,20 @@
-<h2>Chart Display Area</h2>
-<div class="chart-placeholder">
-  <!-- Chart.js or Highcharts can go here -->
-  <p>Select a chart from the left menu.</p>
+<div class="chart-container">
+  <div *ngIf="chartOptions.series?.length; else noChart" class="chart-wrapper">
+    <highcharts-chart
+      [Highcharts]="Highcharts"
+      [options]="chartOptions"
+      [(update)]="updateFlag"
+      style="width: 100%; height: 400px; display: block"
+    ></highcharts-chart>
+  </div>
+
+  <ng-template #noChart>
+    <div class="no-chart-message">
+      <h3>Select a chart type from the sidebar</h3>
+      <p>
+        Choose from line chart, bar chart, or pie chart to display your data
+        visualization.
+      </p>
+    </div>
+  </ng-template>
 </div>

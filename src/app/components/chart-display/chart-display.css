@@ -1,8 +1,5 @@
-.chart-placeholder {
-  height: 100%;
-  border: 2px dashed #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+/* chart-display.css */
+.chart-container {
+  padding: 20px;
+  flex-grow: 1;
 }

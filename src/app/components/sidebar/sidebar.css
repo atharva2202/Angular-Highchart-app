@@ -1,31 +1,101 @@
-.menu {
-  list-style: none;
+/* sidebar.css */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #2c3e50;
+  color: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #34495e;
+  background: #34495e;
+}
+
+.sidebar-header h3 {
   margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.sidebar-menu {
   padding: 0;
+}
 
-  .menu-header {
-    padding: 12px 20px;
-    font-weight: bold;
-    background-color: #e0e0e0;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-  }
+.menu-item {
+  border-bottom: 1px solid #34495e;
+}
 
-  .submenu {
-    list-style: none;
-    padding: 0;
+.menu-button {
+  width: 100%;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
 
-    li {
-      padding: 10px 30px;
-      cursor: pointer;
-      &:hover {
-        background-color: #dcdcdc;
-      }
-    }
-  }
+.menu-button:hover {
+  background: #34495e;
+}
 
-  .arrow {
-    font-size: 12px;
-  }
+.menu-icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+  font-size: 12px;
+}
+
+.toggle-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #1a252f;
+}
+
+.submenu.show {
+  max-height: 200px;
+}
+
+.submenu-item {
+  width: 100%;
+  padding: 12px 20px 12px 50px;
+  background: none;
+  border: none;
+  color: #bdc3c7;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.submenu-item:hover {
+  background: #34495e;
+  color: white;
+}
+
+.submenu-item.active {
+  background: #3498db;
+  color: white;
+}
+
+.submenu-icon {
+  margin-right: 8px;
+  font-size: 14px;
 }
