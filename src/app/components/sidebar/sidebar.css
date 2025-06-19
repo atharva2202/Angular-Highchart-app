@@ -1,101 +1,41 @@
-/* sidebar.css */
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  background: #2c3e50;
-  color: white;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+.submenu {
+  display: none;
+  flex-direction: column;
+  padding-left: 10px;
 }
 
-.sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid #34495e;
-  background: #34495e;
-}
-
-.sidebar-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.sidebar-menu {
-  padding: 0;
-}
-
-.menu-item {
-  border-bottom: 1px solid #34495e;
+.submenu.show {
+  display: flex;
 }
 
 .menu-button {
-  width: 100%;
-  padding: 15px 20px;
-  background: none;
+  background-color: transparent;
   border: none;
-  color: white;
+  font-size: 16px;
+  width: 100%;
   text-align: left;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  padding: 10px;
 }
 
-.menu-button:hover {
-  background: #34495e;
+.submenu-item {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
 }
 
-.menu-icon {
-  margin-right: 10px;
-  font-size: 18px;
+.submenu-item.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
 }
 
 .toggle-icon {
-  transition: transform 0.3s ease;
-  font-size: 12px;
+  float: right;
+  transition: transform 0.2s ease-in-out;
 }
 
 .toggle-icon.rotated {
   transform: rotate(180deg);
-}
-
-.submenu {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  background: #1a252f;
-}
-
-.submenu.show {
-  max-height: 200px;
-}
-
-.submenu-item {
-  width: 100%;
-  padding: 12px 20px 12px 50px;
-  background: none;
-  border: none;
-  color: #bdc3c7;
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.submenu-item:hover {
-  background: #34495e;
-  color: white;
-}
-
-.submenu-item.active {
-  background: #3498db;
-  color: white;
-}
-
-.submenu-icon {
-  margin-right: 8px;
-  font-size: 14px;
 }

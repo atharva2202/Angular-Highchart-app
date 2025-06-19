@@ -18,8 +18,7 @@
           [class.active]="selectedChart === 'line'"
           (click)="selectChart('line')"
         >
-          <span class="submenu-icon">📈</span>
-          Line Chart
+          📈 Line Chart
         </button>
 
         <button
@@ -27,8 +26,7 @@
           [class.active]="selectedChart === 'bar'"
           (click)="selectChart('bar')"
         >
-          <span class="submenu-icon">📊</span>
-          Bar Chart
+          📊 Column Chart
         </button>
 
         <button
@@ -36,8 +34,31 @@
           [class.active]="selectedChart === 'pie'"
           (click)="selectChart('pie')"
         >
-          <span class="submenu-icon">🥧</span>
-          Pie Chart
+          🥧 Pie Chart
+        </button>
+
+        <!--  <button
+          class="submenu-item"
+          [class.active]="selectedChart === 'treemap'"
+          (click)="selectChart('treemap')"
+        >
+          🌲 Treemap
+        </button> -->
+
+        <button
+          class="submenu-item"
+          [class.active]="selectedChart === 'area'"
+          (click)="selectChart('area')"
+        >
+          📉 Area Chart
+        </button>
+
+        <button
+          class="submenu-item"
+          [class.active]="selectedChart === 'stacked-bar'"
+          (click)="selectChart('stacked-bar')"
+        >
+          🧱 Stacked Bar
         </button>
       </div>
     </div>

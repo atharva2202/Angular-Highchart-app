@@ -1,20 +1,20 @@
 <div class="chart-container">
-  <div *ngIf="chartOptions.series?.length; else noChart" class="chart-wrapper">
-    <highcharts-chart
-      [Highcharts]="Highcharts"
-      [options]="chartOptions"
-      [(update)]="updateFlag"
-      style="width: 100%; height: 400px; display: block"
-    ></highcharts-chart>
-  </div>
+  <highcharts-chart
+    *ngIf="chartOptions.series && chartOptions.series.length"
+    [Highcharts]="Highcharts"
+    [options]="chartOptions"
+    [update]="updateFlag"
+    [oneToOne]="true"
+    [runOutsideAngular]="false"
+    [key]="chartKey"
+    style="width: 100%; height: 400px; display: block"
+  ></highcharts-chart>
 
-  <ng-template #noChart>
-    <div class="no-chart-message">
-      <h3>Select a chart type from the sidebar</h3>
-      <p>
-        Choose from line chart, bar chart, or pie chart to display your data
-        visualization.
-      </p>
-    </div>
-  </ng-template>
+  <div
+    *ngIf="!chartOptions.series || !chartOptions.series.length"
+    class="no-chart-msg"
+  >
+    <h2>No chart selected</h2>
+    <p>Please choose a chart type from the sidebar.</p>
+  </div>
 </div>

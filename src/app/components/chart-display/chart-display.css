@@ -1,5 +1,16 @@
-/* chart-display.css */
 .chart-container {
   padding: 20px;
   flex-grow: 1;
+  position: relative;
+  min-height: 400px;
+}
+
+.no-chart-msg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #666;
+  font-family: Arial, sans-serif;
 }
