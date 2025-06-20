@@ -1,4 +1,3 @@
-<!-- sidebar.html -->
 <div class="sidebar">
   <div class="sidebar-header">
     <h3>Dashboard</h3>
@@ -7,7 +6,7 @@
   <div class="sidebar-menu">
     <div class="menu-item">
       <button class="menu-button" (click)="toggleCharts()">
-        <span class="menu-icon">📊</span>
+        <span class="menu-icon"></span>
         Charts
         <span class="toggle-icon" [class.rotated]="showCharts">▼</span>
       </button>
@@ -18,7 +17,7 @@
           [class.active]="selectedChart === 'line'"
           (click)="selectChart('line')"
         >
-          📈 Line Chart
+          Line Chart
         </button>
 
         <button
@@ -26,7 +25,7 @@
           [class.active]="selectedChart === 'bar'"
           (click)="selectChart('bar')"
         >
-          📊 Column Chart
+          Column Chart
         </button>
 
         <button
@@ -34,7 +33,7 @@
           [class.active]="selectedChart === 'pie'"
           (click)="selectChart('pie')"
         >
-          🥧 Pie Chart
+          Pie Chart
         </button>
 
         <button
@@ -42,7 +41,7 @@
           [class.active]="selectedChart === 'treemap'"
           (click)="selectChart('treemap')"
         >
-          🌲 Treemap
+          Treemap
         </button>
 
         <button
@@ -50,7 +49,7 @@
           [class.active]="selectedChart === 'area'"
           (click)="selectChart('area')"
         >
-          📉 Area Chart
+          Area Chart
         </button>
 
         <button
@@ -58,7 +57,7 @@
           [class.active]="selectedChart === 'stacked-bar'"
           (click)="selectChart('stacked-bar')"
         >
-          🧱 Stacked Bar
+          Stacked Bar
         </button>
       </div>
     </div>

@@ -18,11 +18,9 @@ export class Sidebar {
 
   toggleCharts() {
     this.showCharts = !this.showCharts;
-    console.log('showCharts:', this.showCharts); // Add this for debugging
   }
 
   selectChart(type: string) {
-    console.log(`Selected chart: ${type}`);
     this.selectedChart = type;
     this.chartService.setChartType(type);
   }

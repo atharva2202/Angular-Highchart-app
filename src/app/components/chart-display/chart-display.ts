@@ -2,14 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import * as Highcharts from 'highcharts';
-
 import { Chart } from '../../services/chart';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HighchartsChartComponent } from 'highcharts-angular';
-
-// ✅ Fixed treemap module import - use require instead of import
-/* const HighchartsTreemap = require('highcharts/modules/treemap');
-HighchartsTreemap(Highcharts); */
 
 @Component({
   selector: 'app-chart-display',
@@ -24,10 +19,14 @@ export class ChartDisplay implements OnInit, OnDestroy {
   chartOptions: Highcharts.Options = {};
   updateFlag = false;
   chartKey: string = '';
+  currentChartType: string = '';
+  chartError: boolean = false;
 
   private subscription: Subscription = new Subscription();
-
-  constructor(private Chart: Chart) {}
+  private treemapModuleLoaded: boolean = true;
+  constructor(private Chart: Chart) {
+    this.loadTreemapModuleSafely();
+  }
 
   ngOnInit() {
     this.subscription = this.Chart.getChartType().subscribe((chartType) => {
@@ -40,17 +39,31 @@ export class ChartDisplay implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  currentChartType: string = '';
-  chartError: boolean = false;
+
+  private loadTreemapModuleSafely() {
+    import('highcharts/modules/treemap')
+      .then((TreemapModule) => {
+        TreemapModule.default(Highcharts);
+        this.treemapModuleLoaded = true;
+      })
+      .catch((err) => {
+        console.error('Treemap module failed to load', err);
+        this.treemapModuleLoaded = false;
+      });
+  }
 
   private createChart(chartType: string) {
     this.updateFlag = false;
     this.chartOptions = {};
-    this.chartError = false; // Reset error at start
+    this.chartError = false;
     this.currentChartType = chartType;
 
     setTimeout(() => {
       try {
+        if (chartType === 'treemap' && !this.treemapModuleLoaded) {
+          throw new Error('Treemap module not loaded');
+        }
+
         switch (chartType) {
           case 'line':
             this.chartOptions = this.getLineChartOptions();
@@ -74,13 +87,6 @@ export class ChartDisplay implements OnInit, OnDestroy {
             this.chartOptions = this.getLineChartOptions();
         }
 
-        if (
-          !this.chartOptions.series ||
-          this.chartOptions.series.length === 0
-        ) {
-          throw new Error('Empty series');
-        }
-
         this.chartKey = `${chartType}-${Date.now()}-${Math.random()}`;
         this.updateFlag = true;
       } catch (err) {
@@ -93,8 +99,8 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getLineChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'line', // ✅ Explicitly set chart type
-        animation: false, // ✅ Disable animation for cleaner transitions
+        type: 'line',
+        animation: false,
       },
       title: {
         text: 'U.S Solar Employment Growth',
@@ -130,7 +136,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
             connectorAllowed: false,
           },
           pointStart: 2010,
-          stacking: undefined, // ✅ Explicitly disable stacking
+          stacking: undefined,
         },
       },
       series: [
@@ -208,7 +214,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getBarChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'column', // ✅ Explicitly set chart type
+        type: 'column',
         animation: false,
       },
       title: {
@@ -240,10 +246,10 @@ export class ChartDisplay implements OnInit, OnDestroy {
         column: {
           pointPadding: 0.2,
           borderWidth: 0,
-          stacking: undefined, // ✅ Explicitly disable stacking
+          stacking: undefined,
         },
         series: {
-          stacking: undefined, // ✅ Explicitly disable stacking
+          stacking: undefined,
         },
       },
       series: [
@@ -264,7 +270,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getPieChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'pie', // ✅ Explicitly set chart type
+        type: 'pie',
         animation: false,
         zooming: {
           type: 'xy',
@@ -278,11 +284,17 @@ export class ChartDisplay implements OnInit, OnDestroy {
       title: {
         text: 'Egg Yolk Composition',
       },
+      subtitle: {
+        text: 'Source:<a href="https://www.mdpi.com/2072-6643/11/3/684/htm" target="_default">MDPI</a>',
+      },
       tooltip: {
         valueSuffix: '%',
       },
-      subtitle: {
-        text: 'Source:<a href="https://www.mdpi.com/2072-6643/11/3/684/htm" target="_default">MDPI</a>',
+      legend: {
+        enabled: true,
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'bottom',
       },
       plotOptions: {
         pie: {
@@ -311,7 +323,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
           ],
         },
         series: {
-          stacking: undefined, // ✅ Explicitly disable stacking
+          stacking: undefined,
         },
       },
       series: [
@@ -330,7 +342,6 @@ export class ChartDisplay implements OnInit, OnDestroy {
     };
   }
 
-  // ✅ Enhanced treemap options with better configuration
   private getTreemapOptions(): Highcharts.Options {
     return {
       chart: {
@@ -393,7 +404,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getAreaChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'area', // ✅ Explicitly set chart type
+        type: 'area',
         animation: false,
       },
       accessibility: {
@@ -458,10 +469,10 @@ export class ChartDisplay implements OnInit, OnDestroy {
               },
             },
           },
-          stacking: undefined, // ✅ Explicitly disable stacking
+          stacking: undefined,
         },
         series: {
-          stacking: undefined, // ✅ Explicitly disable stacking
+          stacking: undefined,
         },
       },
       series: [
@@ -654,7 +665,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getStackedBarChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'bar', // ✅ Explicitly set chart type
+        type: 'bar',
         animation: false,
       },
       title: {
@@ -675,7 +686,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
       },
       plotOptions: {
         series: {
-          stacking: 'normal', // ✅ Enable stacking only for this chart
+          stacking: 'normal',
           dataLabels: {
             enabled: true,
           },
@@ -684,7 +695,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
           dataLabels: {
             enabled: true,
           },
-          stacking: 'normal', // ✅ Enable stacking only for this chart
+          stacking: 'normal',
         },
       },
       series: [

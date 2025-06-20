@@ -1,5 +1,6 @@
 <div class="chart-container">
   <h2 *ngIf="currentChartType">{{ currentChartType | lowercase }}</h2>
+  <!-- lowercase pipe used here to demonstrate use of pipes -->
 
   <highcharts-chart
     *ngIf="!chartError && chartOptions.series && chartOptions.series.length"
@@ -12,16 +13,13 @@
     style="width: 100%; height: 400px; display: block"
   ></highcharts-chart>
 
-  <div *ngIf="!chartOptions.series || !chartOptions.series.length">
-    <h2>No chart selected</h2>
-    <p>Please choose a chart type from the sidebar.</p>
-  </div>
-
   <div *ngIf="chartError" class="error-msg">
     <h2>Error fetching chart details</h2>
-    <p>
-      Something went wrong while loading the chart. Please try again or select a
-      different chart type.
-    </p>
+    <p>There was a problem rendering this chart type. Please try another.</p>
+  </div>
+
+  <div *ngIf="!currentChartType && !chartError" class="no-chart-msg">
+    <h2>No chart selected</h2>
+    <p>Please choose a chart type from the sidebar.</p>
   </div>
 </div>
