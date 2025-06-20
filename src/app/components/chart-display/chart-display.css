@@ -14,3 +14,10 @@
   color: #666;
   font-family: Arial, sans-serif;
 }
+.error-msg {
+  color: red;
+  padding: 1em;
+  border: 1px solid red;
+  background-color: #ffe5e5;
+  margin-top: 1em;
+}

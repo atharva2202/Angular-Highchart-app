@@ -2,17 +2,19 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import * as Highcharts from 'highcharts';
+
 import { Chart } from '../../services/chart';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HighchartsChartComponent } from 'highcharts-angular';
 
-/* import { highchartsLoader } from '../../highcharts-loader'; // ✅ your loader file */
+// ✅ Fixed treemap module import - use require instead of import
+/* const HighchartsTreemap = require('highcharts/modules/treemap');
+HighchartsTreemap(Highcharts); */
 
 @Component({
   selector: 'app-chart-display',
   standalone: true,
   imports: [CommonModule, HighchartsChartComponent],
-  /* providers: [provideHighcharts(highchartsLoader)], */
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chart-display.html',
   styleUrl: './chart-display.css',
@@ -38,68 +40,89 @@ export class ChartDisplay implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+  currentChartType: string = '';
+  chartError: boolean = false;
 
   private createChart(chartType: string) {
+    this.updateFlag = false;
     this.chartOptions = {};
-    switch (chartType) {
-      case 'line':
-        this.chartOptions = this.getLineChartOptions();
-        break;
-      case 'bar':
-        this.chartOptions = this.getBarChartOptions();
-        break;
-      case 'pie':
-        this.chartOptions = this.getPieChartOptions();
-        break;
+    this.chartError = false; // Reset error at start
+    this.currentChartType = chartType;
 
-      case 'area':
-        this.chartOptions = this.getAreaChartOptions();
-        break;
-      case 'stacked-bar':
-        this.chartOptions = this.getStackedBarChartOptions();
-        break;
-      default:
-        this.chartOptions = this.getLineChartOptions();
-    }
+    setTimeout(() => {
+      try {
+        switch (chartType) {
+          case 'line':
+            this.chartOptions = this.getLineChartOptions();
+            break;
+          case 'bar':
+            this.chartOptions = this.getBarChartOptions();
+            break;
+          case 'pie':
+            this.chartOptions = this.getPieChartOptions();
+            break;
+          case 'treemap':
+            this.chartOptions = this.getTreemapOptions();
+            break;
+          case 'area':
+            this.chartOptions = this.getAreaChartOptions();
+            break;
+          case 'stacked-bar':
+            this.chartOptions = this.getStackedBarChartOptions();
+            break;
+          default:
+            this.chartOptions = this.getLineChartOptions();
+        }
 
-    this.chartKey = `${chartType}-${new Date().getTime()}`; // ✅ forces new component rendering
-    this.updateFlag = true;
+        if (
+          !this.chartOptions.series ||
+          this.chartOptions.series.length === 0
+        ) {
+          throw new Error('Empty series');
+        }
+
+        this.chartKey = `${chartType}-${Date.now()}-${Math.random()}`;
+        this.updateFlag = true;
+      } catch (err) {
+        console.error('Error creating chart:', err);
+        this.chartError = true;
+      }
+    }, 10);
   }
 
   private getLineChartOptions(): Highcharts.Options {
     return {
+      chart: {
+        type: 'line', // ✅ Explicitly set chart type
+        animation: false, // ✅ Disable animation for cleaner transitions
+      },
       title: {
         text: 'U.S Solar Employment Growth',
         align: 'left',
       },
-
       subtitle: {
         text: 'By Job Category. Source: <a href="https://irecusa.org/programs/solar-jobs-census/" target="_blank">IREC</a>.',
         align: 'left',
       },
-
       yAxis: {
         title: {
           text: 'Number of Employees',
         },
       },
-
       xAxis: {
         accessibility: {
           rangeDescription: 'Range: 2010 to 2022',
         },
       },
-
       legend: {
         layout: 'vertical',
         align: 'right',
         verticalAlign: 'middle',
       },
-
       plotOptions: {
         line: {
           dataLabels: {
-            enabled: true, // ✅ Show data labels
+            enabled: true,
           },
         },
         series: {
@@ -107,9 +130,9 @@ export class ChartDisplay implements OnInit, OnDestroy {
             connectorAllowed: false,
           },
           pointStart: 2010,
+          stacking: undefined, // ✅ Explicitly disable stacking
         },
       },
-
       series: [
         {
           name: 'Installation & Developers',
@@ -163,7 +186,6 @@ export class ChartDisplay implements OnInit, OnDestroy {
           ],
         },
       ],
-
       responsive: {
         rules: [
           {
@@ -186,15 +208,14 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getBarChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'column',
+        type: 'column', // ✅ Explicitly set chart type
+        animation: false,
       },
       title: {
         text: 'Corn vs wheat estimated production for 2023',
       },
       subtitle: {
-        text:
-          'Source: <a target="_blank" ' +
-          'href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
+        text: 'Source: <a target="_blank" href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
       },
       xAxis: {
         categories: ['USA', 'China', 'Brazil', 'EU', 'Argentina', 'India'],
@@ -213,12 +234,16 @@ export class ChartDisplay implements OnInit, OnDestroy {
         valueSuffix: ' (1000 MT)',
       },
       legend: {
-        enabled: false, // ✅ Disable legend here
+        enabled: false,
       },
       plotOptions: {
         column: {
           pointPadding: 0.2,
           borderWidth: 0,
+          stacking: undefined, // ✅ Explicitly disable stacking
+        },
+        series: {
+          stacking: undefined, // ✅ Explicitly disable stacking
         },
       },
       series: [
@@ -239,7 +264,8 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getPieChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'pie',
+        type: 'pie', // ✅ Explicitly set chart type
+        animation: false,
         zooming: {
           type: 'xy',
         },
@@ -261,9 +287,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
       plotOptions: {
         pie: {
           allowPointSelect: true,
-
           cursor: 'pointer',
-
           dataLabels: [
             {
               enabled: true,
@@ -286,74 +310,101 @@ export class ChartDisplay implements OnInit, OnDestroy {
             },
           ],
         },
+        series: {
+          stacking: undefined, // ✅ Explicitly disable stacking
+        },
       },
       series: [
         {
           name: 'Percentage',
           type: 'pie',
-
           data: [
-            {
-              name: 'Water',
-              y: 55.02,
-            },
-            {
-              name: 'Fat',
-              sliced: true,
-              selected: true,
-              y: 26.71,
-            },
-            {
-              name: 'Carbohydrates',
-              y: 1.09,
-            },
-            {
-              name: 'Protein',
-              y: 15.5,
-            },
-            {
-              name: 'Ash',
-              y: 1.68,
-            },
+            { name: 'Water', y: 55.02 },
+            { name: 'Fat', sliced: true, selected: true, y: 26.71 },
+            { name: 'Carbohydrates', y: 1.09 },
+            { name: 'Protein', y: 15.5 },
+            { name: 'Ash', y: 1.68 },
           ],
         },
       ],
     };
   }
+
+  // ✅ Enhanced treemap options with better configuration
+  private getTreemapOptions(): Highcharts.Options {
+    return {
+      chart: {
+        type: 'treemap',
+        animation: false,
+      },
+      title: {
+        text: 'Global Market Share by Company',
+        align: 'left',
+      },
+      subtitle: {
+        text: 'Treemap visualization of market distribution',
+        align: 'left',
+      },
+      tooltip: {
+        pointFormat: '<b>{point.name}</b>: {point.value}%',
+      },
+      plotOptions: {
+        treemap: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+            enabled: true,
+            format: '{point.name}<br/>{point.value}%',
+            style: {
+              color: 'white',
+              textOutline: '1px black',
+            },
+          },
+          levelIsConstant: false,
+          levels: [
+            {
+              level: 1,
+              dataLabels: {
+                enabled: true,
+              },
+            },
+          ],
+        },
+      },
+      series: [
+        {
+          type: 'treemap',
+          layoutAlgorithm: 'squarified',
+          data: [
+            { name: 'Apple', value: 28.5, color: '#007AFF' },
+            { name: 'Google', value: 23.1, color: '#4285F4' },
+            { name: 'Microsoft', value: 18.9, color: '#00BCF2' },
+            { name: 'Amazon', value: 12.7, color: '#FF9900' },
+            { name: 'Meta', value: 8.3, color: '#1877F2' },
+            { name: 'Tesla', value: 4.2, color: '#CC0000' },
+            { name: 'Netflix', value: 2.8, color: '#E50914' },
+            { name: 'Others', value: 1.5, color: '#666666' },
+          ],
+        },
+      ],
+    };
+  }
+
   private getAreaChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'area',
+        type: 'area', // ✅ Explicitly set chart type
+        animation: false,
       },
       accessibility: {
         description:
-          'Image description: An area chart compares the nuclear ' +
-          'stockpiles of the USA and the USSR/Russia between 1945 and ' +
-          '2024. The number of nuclear weapons is plotted on the Y-axis ' +
-          'and the years on the X-axis. The chart is interactive, and the ' +
-          'year-on-year stockpile levels can be traced for each country. ' +
-          'The US has a stockpile of 2 nuclear weapons at the dawn of the ' +
-          'nuclear age in 1945. This number has gradually increased to 170 ' +
-          'by 1949 when the USSR enters the arms race with one weapon. At ' +
-          'this point, the US starts to rapidly build its stockpile ' +
-          'culminating in 31,255 warheads by 1966 compared to the USSR’s 8,' +
-          '400. From this peak in 1967, the US stockpile gradually ' +
-          'decreases as the USSR’s stockpile expands. By 1978 the USSR has ' +
-          'closed the nuclear gap at 25,393. The USSR stockpile continues ' +
-          'to grow until it reaches a peak of 40,159 in 1986 compared to ' +
-          'the US arsenal of 24,401. From 1986, the nuclear stockpiles of ' +
-          'both countries start to fall. By 2000, the numbers have fallen ' +
-          'to 10,577 and 12,188 for the US and Russia, respectively. The ' +
-          'decreases continue slowly after plateauing in the 2010s, and in ' +
-          '2024 the US has 3,708 weapons compared to Russia’s 4,380.',
+          'Image description: An area chart compares the nuclear stockpiles of the USA and the USSR/Russia between 1945 and 2024...',
       },
       title: {
         text: 'US and USSR nuclear stockpiles',
       },
       subtitle: {
-        text:
-          'Source: <a href="https://fas.org/issues/nuclear-weapons/status-world-nuclear-forces/" ' +
-          'target="_blank">FAS</a>',
+        text: 'Source: <a href="https://fas.org/issues/nuclear-weapons/status-world-nuclear-forces/" target="_blank">FAS</a>',
       },
       xAxis: {
         allowDecimals: false,
@@ -361,7 +412,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
           rangeDescription: 'Range: 1940 to 2024.',
         },
         labels: {
-          align: 'center', // or 'left' / 'right'
+          align: 'center',
           rotation: 0,
           style: {
             fontSize: '12px',
@@ -372,8 +423,8 @@ export class ChartDisplay implements OnInit, OnDestroy {
       yAxis: {
         title: {
           text: 'Nuclear weapon states',
-          align: 'high', // ✅ Align the title at the top of the axis
-          rotation: 0, // ✅ Make the title horizontal
+          align: 'high',
+          rotation: 0,
           x: 0,
           y: -10,
           style: {
@@ -382,7 +433,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
           },
         },
         labels: {
-          align: 'left', // ✅ Align the labels to the left of tick marks
+          align: 'left',
           x: -10,
           style: {
             fontSize: '12px',
@@ -392,8 +443,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
       },
       tooltip: {
         pointFormat:
-          '{series.name} had stockpiled <b>{point.y:,.0f}</b><br/>' +
-          'warheads in {point.x}',
+          '{series.name} had stockpiled <b>{point.y:,.0f}</b><br/>warheads in {point.x}',
       },
       plotOptions: {
         area: {
@@ -408,6 +458,10 @@ export class ChartDisplay implements OnInit, OnDestroy {
               },
             },
           },
+          stacking: undefined, // ✅ Explicitly disable stacking
+        },
+        series: {
+          stacking: undefined, // ✅ Explicitly disable stacking
         },
       },
       series: [
@@ -600,7 +654,8 @@ export class ChartDisplay implements OnInit, OnDestroy {
   private getStackedBarChartOptions(): Highcharts.Options {
     return {
       chart: {
-        type: 'bar', // ✅ Chart type is bar
+        type: 'bar', // ✅ Explicitly set chart type
+        animation: false,
       },
       title: {
         text: 'Ferry passengers by vehicle type 2024',
@@ -620,7 +675,7 @@ export class ChartDisplay implements OnInit, OnDestroy {
       },
       plotOptions: {
         series: {
-          stacking: 'normal', // ✅ Stack bars
+          stacking: 'normal', // ✅ Enable stacking only for this chart
           dataLabels: {
             enabled: true,
           },
@@ -629,11 +684,12 @@ export class ChartDisplay implements OnInit, OnDestroy {
           dataLabels: {
             enabled: true,
           },
+          stacking: 'normal', // ✅ Enable stacking only for this chart
         },
       },
       series: [
         {
-          type: 'bar', // ✅ Must explicitly declare
+          type: 'bar',
           name: 'Motorcycles',
           data: [74, 27, 52, 93, 1272],
         },
