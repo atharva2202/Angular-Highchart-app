@@ -1,10 +1,40 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import * as Highcharts from 'highcharts';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  DoughnutController,
+} from 'chart.js';
 import { Chart } from '../../services/chart';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HighchartsChartComponent } from 'highcharts-angular';
+
+// Register Chart.js components
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  DoughnutController
+);
 
 @Component({
   selector: 'app-chart-display',
@@ -14,19 +44,22 @@ import { HighchartsChartComponent } from 'highcharts-angular';
   templateUrl: './chart-display.html',
   styleUrl: './chart-display.css',
 })
-export class ChartDisplay implements OnInit, OnDestroy {
+export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('treemapCanvas', { static: false })
+  treemapCanvas!: ElementRef<HTMLCanvasElement>;
+
   Highcharts: typeof Highcharts = Highcharts;
   chartOptions: Highcharts.Options = {};
   updateFlag = false;
   chartKey: string = '';
   currentChartType: string = '';
   chartError: boolean = false;
+  showTreemapCanvas: boolean = false;
 
   private subscription: Subscription = new Subscription();
-  private treemapModuleLoaded: boolean = true;
-  constructor(private Chart: Chart) {
-    this.loadTreemapModuleSafely();
-  }
+  private treemapChart: ChartJS | null = null;
+
+  constructor(private Chart: Chart) {}
 
   ngOnInit() {
     this.subscription = this.Chart.getChartType().subscribe((chartType) => {
@@ -36,34 +69,32 @@ export class ChartDisplay implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  ngAfterViewInit() {
+    // Canvas will be available after view init
   }
 
-  private loadTreemapModuleSafely() {
-    import('highcharts/modules/treemap')
-      .then((TreemapModule) => {
-        TreemapModule.default(Highcharts);
-        this.treemapModuleLoaded = true;
-      })
-      .catch((err) => {
-        console.error('Treemap module failed to load', err);
-        this.treemapModuleLoaded = false;
-      });
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    if (this.treemapChart) {
+      this.treemapChart.destroy();
+    }
   }
 
   private createChart(chartType: string) {
     this.updateFlag = false;
     this.chartOptions = {};
     this.chartError = false;
+    this.showTreemapCanvas = false;
     this.currentChartType = chartType;
+
+    // Destroy existing treemap chart if it exists
+    if (this.treemapChart) {
+      this.treemapChart.destroy();
+      this.treemapChart = null;
+    }
 
     setTimeout(() => {
       try {
-        if (chartType === 'treemap' && !this.treemapModuleLoaded) {
-          throw new Error('Treemap module not loaded');
-        }
-
         switch (chartType) {
           case 'line':
             this.chartOptions = this.getLineChartOptions();
@@ -75,8 +106,8 @@ export class ChartDisplay implements OnInit, OnDestroy {
             this.chartOptions = this.getPieChartOptions();
             break;
           case 'treemap':
-            this.chartOptions = this.getTreemapOptions();
-            break;
+            this.createTreemapChart();
+            return; // Exit early for treemap
           case 'area':
             this.chartOptions = this.getAreaChartOptions();
             break;
@@ -94,6 +125,93 @@ export class ChartDisplay implements OnInit, OnDestroy {
         this.chartError = true;
       }
     }, 10);
+  }
+
+  private createTreemapChart() {
+    this.showTreemapCanvas = true;
+
+    setTimeout(() => {
+      if (this.treemapCanvas?.nativeElement) {
+        const ctx = this.treemapCanvas.nativeElement.getContext('2d');
+        if (ctx) {
+          this.treemapChart = new ChartJS(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: [
+                'Apple',
+                'Google',
+                'Microsoft',
+                'Amazon',
+                'Meta',
+                'Tesla',
+                'Netflix',
+                'Others',
+              ],
+              datasets: [
+                {
+                  label: 'Market Share (%)',
+                  data: [28.5, 23.1, 18.9, 12.7, 8.3, 4.2, 2.8, 1.5],
+                  backgroundColor: [
+                    '#007AFF',
+                    '#4285F4',
+                    '#00BCF2',
+                    '#FF9900',
+                    '#1877F2',
+                    '#CC0000',
+                    '#E50914',
+                    '#666666',
+                  ],
+                  borderWidth: 2,
+                  borderColor: '#ffffff',
+                  hoverOffset: 10,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Global Market Share by Company',
+                  font: {
+                    size: 16,
+                    weight: 'bold',
+                  },
+                  padding: {
+                    top: 10,
+                    bottom: 30,
+                  },
+                },
+                legend: {
+                  position: 'right',
+                  labels: {
+                    padding: 20,
+                    usePointStyle: true,
+                    font: {
+                      size: 12,
+                    },
+                  },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      const label = context.label || '';
+                      const value = context.parsed || 0;
+                      return `${label}: ${value}%`;
+                    },
+                  },
+                },
+              },
+              animation: {
+                animateRotate: true,
+                animateScale: true,
+              },
+            },
+          });
+        }
+      }
+    }, 50);
   }
 
   private getLineChartOptions(): Highcharts.Options {
@@ -336,65 +454,6 @@ export class ChartDisplay implements OnInit, OnDestroy {
             { name: 'Carbohydrates', y: 1.09 },
             { name: 'Protein', y: 15.5 },
             { name: 'Ash', y: 1.68 },
-          ],
-        },
-      ],
-    };
-  }
-
-  private getTreemapOptions(): Highcharts.Options {
-    return {
-      chart: {
-        type: 'treemap',
-        animation: false,
-      },
-      title: {
-        text: 'Global Market Share by Company',
-        align: 'left',
-      },
-      subtitle: {
-        text: 'Treemap visualization of market distribution',
-        align: 'left',
-      },
-      tooltip: {
-        pointFormat: '<b>{point.name}</b>: {point.value}%',
-      },
-      plotOptions: {
-        treemap: {
-          allowPointSelect: true,
-          cursor: 'pointer',
-          dataLabels: {
-            enabled: true,
-            format: '{point.name}<br/>{point.value}%',
-            style: {
-              color: 'white',
-              textOutline: '1px black',
-            },
-          },
-          levelIsConstant: false,
-          levels: [
-            {
-              level: 1,
-              dataLabels: {
-                enabled: true,
-              },
-            },
-          ],
-        },
-      },
-      series: [
-        {
-          type: 'treemap',
-          layoutAlgorithm: 'squarified',
-          data: [
-            { name: 'Apple', value: 28.5, color: '#007AFF' },
-            { name: 'Google', value: 23.1, color: '#4285F4' },
-            { name: 'Microsoft', value: 18.9, color: '#00BCF2' },
-            { name: 'Amazon', value: 12.7, color: '#FF9900' },
-            { name: 'Meta', value: 8.3, color: '#1877F2' },
-            { name: 'Tesla', value: 4.2, color: '#CC0000' },
-            { name: 'Netflix', value: 2.8, color: '#E50914' },
-            { name: 'Others', value: 1.5, color: '#666666' },
           ],
         },
       ],
