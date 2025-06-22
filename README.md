@@ -29,7 +29,9 @@ Screenshots
 ![image](https://github.com/user-attachments/assets/feaa722c-bfa0-4194-8899-f4f84cb7d259)
 
 
+Video Demo
 
+https://github.com/user-attachments/assets/1e8c6f3d-eb1d-4a4b-820b-79242153e43a
 
 
 
