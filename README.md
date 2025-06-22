@@ -21,9 +21,9 @@ Tech Stack
 
 Screenshots
 
-![alt text](image.png)
-![alt text](image2.png)
-![alt text](image3.png)
-![alt text](image.png)
-![alt text](image.png)
-![alt text](image.png)
+![alt text](assets/image.png)
+![alt text](assets/image2.png)
+![alt text](assets/image3.png)
+![alt text](assets/image4.png)
+![alt text](assets/image5.png)
+![alt text](assets/image6.png)
