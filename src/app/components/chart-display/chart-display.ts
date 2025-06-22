@@ -9,32 +9,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import * as Highcharts from 'highcharts';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  DoughnutController,
-} from 'chart.js';
 import { Chart } from '../../services/chart';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HighchartsChartComponent } from 'highcharts-angular';
 
-// Register Chart.js components
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  DoughnutController
-);
+// Recharts imports
+import { Treemap, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 
 @Component({
   selector: 'app-chart-display',
@@ -45,8 +25,8 @@ ChartJS.register(
   styleUrl: './chart-display.css',
 })
 export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('treemapCanvas', { static: false })
-  treemapCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('treemapContainer', { static: false })
+  treemapContainer!: ElementRef<HTMLDivElement>;
 
   Highcharts: typeof Highcharts = Highcharts;
   chartOptions: Highcharts.Options = {};
@@ -54,10 +34,22 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
   chartKey: string = '';
   currentChartType: string = '';
   chartError: boolean = false;
-  showTreemapCanvas: boolean = false;
+  showTreemapContainer: boolean = false;
+
+  // Recharts treemap data and configuration
+  treemapData = [
+    { name: 'Apple', value: 28.5, color: '#007AFF' },
+    { name: 'Google', value: 1.1, color: '#4285F4' },
+    { name: 'Microsoft', value: 18.9, color: '#00BCF2' },
+    { name: 'Amazon', value: 12.7, color: '#FF9900' },
+    { name: 'Meta', value: 8.3, color: '#1877F2' },
+    { name: 'Tesla', value: 4.2, color: '#CC0000' },
+    { name: 'Netflix', value: 2.8, color: '#E50914' },
+    { name: 'Others', value: 1.5, color: '#666666' },
+    { name: 'Angular', value: 20, color: '#E50914' },
+  ];
 
   private subscription: Subscription = new Subscription();
-  private treemapChart: ChartJS | null = null;
 
   constructor(private Chart: Chart) {}
 
@@ -70,28 +62,19 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Canvas will be available after view init
+    // Container will be available after view init
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    if (this.treemapChart) {
-      this.treemapChart.destroy();
-    }
   }
 
   private createChart(chartType: string) {
     this.updateFlag = false;
     this.chartOptions = {};
     this.chartError = false;
-    this.showTreemapCanvas = false;
+    this.showTreemapContainer = false;
     this.currentChartType = chartType;
-
-    // Destroy existing treemap chart if it exists
-    if (this.treemapChart) {
-      this.treemapChart.destroy();
-      this.treemapChart = null;
-    }
 
     setTimeout(() => {
       try {
@@ -106,7 +89,7 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
             this.chartOptions = this.getPieChartOptions();
             break;
           case 'treemap':
-            this.createTreemapChart();
+            this.showTreemapContainer = true;
             return; // Exit early for treemap
           case 'area':
             this.chartOptions = this.getAreaChartOptions();
@@ -127,92 +110,27 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
     }, 10);
   }
 
-  private createTreemapChart() {
-    this.showTreemapCanvas = true;
+  // Custom tooltip content for treemap
+  customTooltipContent = (active: boolean, payload: any[], label: string) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return `<div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <p style="margin: 0; font-weight: bold; color: #333;">${data.name}</p>
+          <p style="margin: 5px 0 0 0; color: #666;">Market Share: ${data.value}%</p>
+        </div>`;
+    }
+    return null;
+  };
 
-    setTimeout(() => {
-      if (this.treemapCanvas?.nativeElement) {
-        const ctx = this.treemapCanvas.nativeElement.getContext('2d');
-        if (ctx) {
-          this.treemapChart = new ChartJS(ctx, {
-            type: 'doughnut',
-            data: {
-              labels: [
-                'Apple',
-                'Google',
-                'Microsoft',
-                'Amazon',
-                'Meta',
-                'Tesla',
-                'Netflix',
-                'Others',
-              ],
-              datasets: [
-                {
-                  label: 'Market Share (%)',
-                  data: [28.5, 23.1, 18.9, 12.7, 8.3, 4.2, 2.8, 1.5],
-                  backgroundColor: [
-                    '#007AFF',
-                    '#4285F4',
-                    '#00BCF2',
-                    '#FF9900',
-                    '#1877F2',
-                    '#CC0000',
-                    '#E50914',
-                    '#666666',
-                  ],
-                  borderWidth: 2,
-                  borderColor: '#ffffff',
-                  hoverOffset: 10,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                title: {
-                  display: true,
-                  text: 'Global Market Share by Company',
-                  font: {
-                    size: 16,
-                    weight: 'bold',
-                  },
-                  padding: {
-                    top: 10,
-                    bottom: 30,
-                  },
-                },
-                legend: {
-                  position: 'right',
-                  labels: {
-                    padding: 20,
-                    usePointStyle: true,
-                    font: {
-                      size: 12,
-                    },
-                  },
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function (context) {
-                      const label = context.label || '';
-                      const value = context.parsed || 0;
-                      return `${label}: ${value}%`;
-                    },
-                  },
-                },
-              },
-              animation: {
-                animateRotate: true,
-                animateScale: true,
-              },
-            },
-          });
-        }
-      }
-    }, 50);
-  }
+  // Custom label content for treemap cells
+  customLabelContent = (entry: any) => {
+    const { name, value } = entry;
+    if (value > 5) {
+      // Only show labels for larger cells
+      return `${name}\n${value}%`;
+    }
+    return '';
+  };
 
   private getLineChartOptions(): Highcharts.Options {
     return {

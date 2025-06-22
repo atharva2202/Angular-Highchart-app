@@ -5,6 +5,16 @@
   min-height: 400px;
 }
 
+.chart-container h2 {
+  margin: 0 0 20px 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-transform: capitalize;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
 .no-chart-msg {
   position: absolute;
   top: 50%;
@@ -15,23 +25,235 @@
   font-family: Arial, sans-serif;
 }
 
+.no-chart-msg h2 {
+  border: none;
+  padding-bottom: 0;
+  margin-bottom: 10px;
+}
+
 .error-msg {
   color: red;
   padding: 1em;
   border: 1px solid red;
   background-color: #ffe5e5;
   margin-top: 1em;
+  border-radius: 8px;
 }
 
-.chartjs-container {
+.error-msg h2 {
+  margin-top: 0;
+  border: none;
+  padding-bottom: 0;
+}
+
+/* Treemap specific styles */
+.treemap-container {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.treemap-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.treemap-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: -0.5px;
+}
+
+.treemap-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #666666;
+  font-style: italic;
+}
+
+.treemap-chart-wrapper {
+  width: 100%;
+  margin: 20px 0;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.recharts-wrapper {
   width: 100%;
   height: 400px;
-  min-height: 300px;
-  position: relative;
 }
 
-.chartjs-container canvas {
-  width: 100% !important;
-  height: 400px !important;
-  max-width: 100%;
+/* Placeholder treemap implementation (until you integrate actual Recharts) */
+.treemap-placeholder {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.treemap-grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  gap: 2px;
+}
+
+.treemap-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  min-height: 60px;
+  text-align: center;
+}
+
+.treemap-cell:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.cell-label {
+  font-size: 12px;
+  line-height: 1.2;
+  padding: 5px;
+}
+
+/* Legend styles */
+.treemap-legend {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.legend-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.legend-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333333;
+  white-space: nowrap;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 15px;
+  }
+
+  .chart-container h2 {
+    font-size: 24px;
+  }
+
+  .treemap-container {
+    padding: 15px;
+    margin-top: 15px;
+  }
+
+  .treemap-header h3 {
+    font-size: 20px;
+  }
+
+  .recharts-wrapper {
+    height: 350px;
+  }
+
+  .legend-items {
+    gap: 10px;
+  }
+
+  .legend-item {
+    padding: 4px 8px;
+  }
+
+  .legend-label {
+    font-size: 12px;
+  }
+
+  .treemap-cell {
+    min-height: 50px;
+  }
+
+  .cell-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    padding: 10px;
+  }
+
+  .chart-container h2 {
+    font-size: 20px;
+  }
+
+  .recharts-wrapper {
+    height: 300px;
+  }
+
+  .legend-items {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .legend-item {
+    width: 100%;
+    max-width: 200px;
+    justify-content: center;
+  }
+
+  .treemap-cell {
+    min-height: 40px;
+  }
+
+  .cell-label {
+    font-size: 9px;
+  }
 }
