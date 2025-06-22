@@ -1,6 +1,6 @@
 .main-container {
   display: flex;
-  height: calc(100vh - 60px); /* navbar assumed 60px height */
+  height: calc(100vh - 60px); 
 }
 
 app-sidebar {
@@ -18,10 +18,10 @@ app-sidebar {
   overflow-x: hidden;
 }
 
-/* Responsive adjustments for small screens */
+
 @media (max-width: 768px) {
   .main-container {
-    flex-direction: column; /* stack vertically */
+    flex-direction: column; 
     height: auto;
   }
 
@@ -37,7 +37,7 @@ app-sidebar {
   }
 }
 
-/* Responsive highcharts container */
+
 .chart-container highcharts-chart {
   width: 100% !important;
   height: auto !important;

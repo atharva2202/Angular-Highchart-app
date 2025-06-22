@@ -17,7 +17,6 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/router": "^20.0.0",
     "angular-highcharts": "^17.0.1",
-    "apexcharts": "^4.7.0",
     "chart.js": "^4.5.0",
     "chartjs-chart-treemap": "^3.1.0",
     "highcharts": "^12.2.0",

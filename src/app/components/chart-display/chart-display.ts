@@ -13,7 +13,6 @@ import { Chart } from '../../services/chart';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HighchartsChartComponent } from 'highcharts-angular';
 
-// Recharts imports
 import { Treemap, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 
 @Component({
@@ -36,7 +35,6 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
   chartError: boolean = false;
   showTreemapContainer: boolean = false;
 
-  // Recharts treemap data and configuration
   treemapData = [
     { name: 'Apple', value: 28.5, color: '#007AFF' },
     { name: 'Google', value: 1.1, color: '#4285F4' },
@@ -61,9 +59,7 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    // Container will be available after view init
-  }
+  ngAfterViewInit() {}
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -90,7 +86,7 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
             break;
           case 'treemap':
             this.showTreemapContainer = true;
-            return; // Exit early for treemap
+            return;
           case 'area':
             this.chartOptions = this.getAreaChartOptions();
             break;
@@ -110,7 +106,6 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
     }, 10);
   }
 
-  // Custom tooltip content for treemap
   customTooltipContent = (active: boolean, payload: any[], label: string) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -122,11 +117,9 @@ export class ChartDisplay implements OnInit, OnDestroy, AfterViewInit {
     return null;
   };
 
-  // Custom label content for treemap cells
   customLabelContent = (entry: any) => {
     const { name, value } = entry;
     if (value > 5) {
-      // Only show labels for larger cells
       return `${name}\n${value}%`;
     }
     return '';

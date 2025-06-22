@@ -1,8 +1,7 @@
 <div class="chart-container">
-  <h2 *ngIf="currentChartType">{{ currentChartType | lowercase }}</h2>
-  <!-- lowercase pipe used here to demonstrate use of pipes -->
-
-  <!-- Highcharts container -->
+  <div *ngIf="currentChartType && !chartError" class="chart-type-title">
+    <h2>{{currentChartType}} Chart</h2>
+  </div>
   <highcharts-chart
     *ngIf="!chartError && !showTreemapContainer && chartOptions.series && chartOptions.series.length"
     [Highcharts]="Highcharts"
@@ -14,18 +13,16 @@
     style="width: 100%; height: 400px; display: block"
   ></highcharts-chart>
 
-  <!-- Recharts Treemap Container -->
   <div *ngIf="!chartError && showTreemapContainer" class="treemap-container">
     <div class="treemap-header">
-      <h3>Global Market Share by Company</h3>
-      <p class="treemap-subtitle">Interactive Treemap Visualization</p>
+      <h3>{{ currentChartType}} - Global Market Share by Company</h3>
+      <p class="treemap-subtitle">
+        Interactive {{ currentChartType | titlecase }} Visualization
+      </p>
     </div>
 
     <div class="treemap-chart-wrapper">
-      <!-- Recharts Treemap will be rendered here -->
       <div class="recharts-wrapper" style="width: 100%; height: 400px">
-        <!-- Note: This is a placeholder for Recharts treemap component -->
-        <!-- You'll need to implement the actual Recharts component here -->
         <div class="treemap-placeholder">
           <div class="treemap-grid">
             <div
@@ -44,7 +41,6 @@
       </div>
     </div>
 
-    <!-- Legend -->
     <div class="treemap-legend">
       <div class="legend-items">
         <div *ngFor="let item of treemapData" class="legend-item">
